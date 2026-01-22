@@ -12,6 +12,8 @@ This is a fully-functional web app for scripture memorization that you can:
 
 ### Game Mode
 - Click word bubbles to make them disappear
+- **Placeholder spots remain** - shows dashed outline where each word was
+- Helps maintain visual structure for better memorization
 - Beautiful animations when bubbles "pop"
 - Completion celebration when all words are memorized
 - Reset button to try again
@@ -93,11 +95,13 @@ netlify deploy --prod --dir=.
 
 3. **Read the verse** with all words visible
 
-4. **Click each word** as you recite the verse - watch the bubbles pop!
+4. **Click each word** as you recite the verse - the bubble will transform into a dashed placeholder (shows "_ _ _")
 
-5. **Try again** with fewer words visible
+5. **Keep practicing** - the placeholder spots help you remember the word order and structure
 
-6. **Reset** when you want to start over
+6. **Try again** with all words hidden - can you fill in the blanks?
+
+7. **Reset** when you want to start over with all words visible
 
 ## 💾 Data Storage
 
