@@ -40,6 +40,34 @@
       opacity: 0.9;
     }
 
+    .sync-status {
+      margin-top: 10px;
+      font-size: 0.9em;
+    }
+
+    .sync-indicator {
+      display: inline-block;
+      padding: 6px 15px;
+      background: rgba(255,255,255,0.3);
+      border-radius: 20px;
+      color: white;
+      font-weight: 600;
+    }
+
+    .sync-indicator.syncing {
+      background: rgba(255, 193, 7, 0.3);
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    .sync-indicator.error {
+      background: rgba(244, 67, 54, 0.3);
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
     .tabs {
       display: flex;
       gap: 10px;
@@ -576,6 +604,9 @@
     <div class="header">
       <h1>📖 Scripture Memory Game</h1>
       <p>Click the bubbles to memorize God's Word!</p>
+      <div id="syncStatus" class="sync-status">
+        <span class="sync-indicator">☁️ Cloud Sync Active</span>
+      </div>
     </div>
 
     <div class="tabs">
@@ -668,40 +699,109 @@
   </div>
 
   <script>
-    // Storage key for localStorage
-    const STORAGE_KEY = 'scripture_memory_verses';
+    // Cloud storage API endpoint
+    const API_ENDPOINT = '/api/verses';
+    
+    // Cache for verses
+    let versesCache = null;
+    let isSyncing = false;
 
-    // Get verses from localStorage
-    function getVerses() {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      return stored ? JSON.parse(stored) : [];
+    // Get verses from cloud
+    async function getVerses() {
+      if (versesCache && !isSyncing) {
+        return versesCache;
+      }
+      
+      try {
+        const response = await fetch(API_ENDPOINT);
+        if (!response.ok) {
+          throw new Error('Failed to fetch verses');
+        }
+        const data = await response.json();
+        versesCache = data.verses || [];
+        return versesCache;
+      } catch (error) {
+        console.error('Error fetching verses:', error);
+        // Fallback to localStorage if cloud fails
+        const stored = localStorage.getItem('scripture_memory_verses');
+        versesCache = stored ? JSON.parse(stored) : [];
+        return versesCache;
+      }
     }
 
-    // Save verses to localStorage
-    function saveVerses(verses) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(verses));
+    // Save verses to cloud
+    async function saveVerses(verses) {
+      isSyncing = true;
+      versesCache = verses;
+      updateSyncStatus('syncing');
+      
+      // Save to localStorage as backup
+      localStorage.setItem('scripture_memory_verses', JSON.stringify(verses));
+      
+      try {
+        const response = await fetch(API_ENDPOINT, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ verses })
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to save verses');
+        }
+        
+        const data = await response.json();
+        isSyncing = false;
+        updateSyncStatus('synced');
+        return data.verses;
+      } catch (error) {
+        console.error('Error saving verses:', error);
+        isSyncing = false;
+        updateSyncStatus('error');
+        alert('⚠️ Could not sync to cloud. Changes saved locally only.');
+        return verses;
+      }
+    }
+
+    // Update sync status indicator
+    function updateSyncStatus(status) {
+      const indicator = document.querySelector('.sync-indicator');
+      if (!indicator) return;
+      
+      indicator.classList.remove('syncing', 'error');
+      
+      if (status === 'syncing') {
+        indicator.classList.add('syncing');
+        indicator.textContent = '☁️ Syncing...';
+      } else if (status === 'synced') {
+        indicator.textContent = '☁️ Cloud Sync Active';
+      } else if (status === 'error') {
+        indicator.classList.add('error');
+        indicator.textContent = '⚠️ Offline Mode';
+      }
     }
 
     // Initialize with sample verse if empty
-    function initializeApp() {
-      let verses = getVerses();
+    async function initializeApp() {
+      const verses = await getVerses();
       if (verses.length === 0) {
-        verses = [{
+        const sampleVerses = [{
           id: Date.now(),
           name: "John 3:16 - Sample",
           reference: "John 3:16 (NIV)",
           text: "For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.",
           color: "purple"
         }];
-        saveVerses(verses);
+        await saveVerses(sampleVerses);
       }
-      refreshVerseList();
-      populateVerseSelector();
+      await refreshVerseList();
+      await populateVerseSelector();
       updateColorPreview(); // Initialize preview
     }
 
     // Switch between tabs
-    function switchTab(tabName) {
+    async function switchTab(tabName) {
       // Hide all tabs
       document.querySelectorAll('.tab-content').forEach(tab => {
         tab.classList.remove('active');
@@ -714,17 +814,18 @@
       document.getElementById(tabName).classList.add('active');
       event.target.classList.add('active');
 
-      // Refresh data when switching
+      // Refresh data from cloud when switching tabs
+      versesCache = null; // Clear cache to force fresh fetch
       if (tabName === 'admin') {
-        refreshVerseList();
+        await refreshVerseList();
       } else if (tabName === 'game') {
-        populateVerseSelector();
+        await populateVerseSelector();
       }
     }
 
     // Populate verse selector dropdown
-    function populateVerseSelector() {
-      const verses = getVerses();
+    async function populateVerseSelector() {
+      const verses = await getVerses();
       const select = document.getElementById('verseSelect');
       
       // Clear existing options except first
@@ -851,10 +952,10 @@
     }
 
     // Save verse
-    function saveVerse(event) {
+    async function saveVerse(event) {
       event.preventDefault();
       
-      const verses = getVerses();
+      const verses = await getVerses();
       const editingId = document.getElementById('editingId').value;
       
       const verseData = {
@@ -876,15 +977,15 @@
         verses.push(verseData);
       }
 
-      saveVerses(verses);
-      refreshVerseList();
-      populateVerseSelector();
+      await saveVerses(verses);
+      await refreshVerseList();
+      await populateVerseSelector();
       cancelEdit();
     }
 
     // Edit verse
-    function editVerse(id) {
-      const verses = getVerses();
+    async function editVerse(id) {
+      const verses = await getVerses();
       const verse = verses.find(v => v.id === id);
       
       if (!verse) return;
@@ -901,19 +1002,19 @@
     }
 
     // Delete verse
-    function deleteVerse(id) {
+    async function deleteVerse(id) {
       if (!confirm('Are you sure you want to delete this verse?')) return;
 
-      let verses = getVerses();
+      let verses = await getVerses();
       verses = verses.filter(v => v.id !== id);
-      saveVerses(verses);
-      refreshVerseList();
-      populateVerseSelector();
+      await saveVerses(verses);
+      await refreshVerseList();
+      await populateVerseSelector();
     }
 
     // Refresh verse list in admin
-    function refreshVerseList() {
-      const verses = getVerses();
+    async function refreshVerseList() {
+      const verses = await getVerses();
       const listContainer = document.getElementById('verseList');
 
       if (verses.length === 0) {
