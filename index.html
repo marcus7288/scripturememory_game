@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scripture Memory Game</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      color: white;
+      margin-bottom: 30px;
+    }
+
+    .header h1 {
+      font-size: 3em;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .header p {
+      font-size: 1.2em;
+      opacity: 0.9;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      justify-content: center;
+    }
+
+    .tab-button {
+      padding: 12px 30px;
+      background: rgba(255,255,255,0.2);
+      color: white;
+      border: 2px solid white;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 1em;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .tab-button:hover {
+      background: rgba(255,255,255,0.3);
+      transform: translateY(-2px);
+    }
+
+    .tab-button.active {
+      background: white;
+      color: #667eea;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Game View Styles */
+    .game-container {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    }
+
+    .verse-selector {
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .verse-selector select {
+      padding: 12px 20px;
+      font-size: 1.1em;
+      border: 2px solid #667eea;
+      border-radius: 10px;
+      background: white;
+      cursor: pointer;
+      min-width: 300px;
+    }
+
+    .game-instructions {
+      text-align: center;
+      color: #666;
+      margin-bottom: 20px;
+      font-size: 1.1em;
+    }
+
+    .word-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      align-items: center;
+      margin: 40px 0;
+      min-height: 300px;
+    }
+
+    .word-bubble {
+      display: inline-block;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 15px 25px;
+      border-radius: 30px;
+      font-size: 1.5em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      user-select: none;
+    }
+
+    .word-bubble:hover {
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    }
+
+    .word-bubble.hidden {
+      animation: pop 0.3s ease-out forwards;
+    }
+
+    @keyframes pop {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.2);
+        opacity: 0.5;
+      }
+      100% {
+        transform: scale(0);
+        opacity: 0;
+      }
+    }
+
+    .verse-reference {
+      text-align: center;
+      font-size: 1.3em;
+      color: #667eea;
+      font-style: italic;
+      margin-top: 30px;
+      font-weight: 600;
+    }
+
+    .game-controls {
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    .btn {
+      padding: 12px 30px;
+      font-size: 1em;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+      margin: 0 10px;
+    }
+
+    .btn-primary {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: #e0e0e0;
+      color: #333;
+    }
+
+    .btn-secondary:hover {
+      background: #d0d0d0;
+    }
+
+    /* Admin View Styles */
+    .admin-container {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    }
+
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .admin-header h2 {
+      color: #667eea;
+      font-size: 2em;
+    }
+
+    .verse-list {
+      margin-bottom: 30px;
+    }
+
+    .verse-item {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      border: 2px solid #e0e0e0;
+    }
+
+    .verse-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .verse-item-title {
+      font-weight: 600;
+      color: #667eea;
+      font-size: 1.2em;
+    }
+
+    .verse-item-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-small {
+      padding: 6px 15px;
+      font-size: 0.9em;
+      border: none;
+      border-radius: 15px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .btn-edit {
+      background: #ffa726;
+      color: white;
+    }
+
+    .btn-edit:hover {
+      background: #fb8c00;
+    }
+
+    .btn-delete {
+      background: #ef5350;
+      color: white;
+    }
+
+    .btn-delete:hover {
+      background: #e53935;
+    }
+
+    .verse-item-text {
+      color: #666;
+      margin-bottom: 5px;
+    }
+
+    .verse-form {
+      background: #f8f9fa;
+      padding: 30px;
+      border-radius: 10px;
+      border: 2px solid #667eea;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1em;
+      font-family: inherit;
+    }
+
+    .form-group textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .form-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: #999;
+    }
+
+    .empty-state-icon {
+      font-size: 4em;
+      margin-bottom: 20px;
+    }
+
+    .empty-state-text {
+      font-size: 1.2em;
+    }
+
+    /* Completion Message */
+    .completion-message {
+      text-align: center;
+      padding: 40px;
+      animation: fadeIn 0.5s ease-in;
+    }
+
+    .completion-message-icon {
+      font-size: 5em;
+      margin-bottom: 20px;
+    }
+
+    .completion-message-text {
+      font-size: 1.5em;
+      color: #667eea;
+      font-weight: 600;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .help-text {
+      color: #999;
+      font-size: 0.9em;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>📖 Scripture Memory Game</h1>
+      <p>Click the bubbles to memorize God's Word!</p>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-button active" onclick="switchTab('game')">🎮 Play Game</button>
+      <button class="tab-button" onclick="switchTab('admin')">⚙️ Manage Verses</button>
+    </div>
+
+    <!-- Game Tab -->
+    <div id="game" class="tab-content active">
+      <div class="game-container">
+        <div class="verse-selector">
+          <select id="verseSelect" onchange="loadVerse()">
+            <option value="">Select a verse...</option>
+          </select>
+        </div>
+
+        <div id="gameContent">
+          <div class="empty-state">
+            <div class="empty-state-icon">📚</div>
+            <div class="empty-state-text">Select a verse to start playing!</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Tab -->
+    <div id="admin" class="tab-content">
+      <div class="admin-container">
+        <div class="admin-header">
+          <h2>Manage Verses</h2>
+          <button class="btn btn-primary" onclick="showAddForm()">+ Add New Verse</button>
+        </div>
+
+        <div id="verseForm" style="display: none;">
+          <div class="verse-form">
+            <h3 style="margin-bottom: 20px; color: #667eea;">
+              <span id="formTitle">Add New Verse</span>
+            </h3>
+            <form id="verseFormElement" onsubmit="saveVerse(event)">
+              <input type="hidden" id="editingId" value="">
+              
+              <div class="form-group">
+                <label for="verseName">Verse Name / Class *</label>
+                <input type="text" id="verseName" required placeholder="e.g., John 3:16 - Sunday School">
+                <div class="help-text">Give this verse a memorable name or associate it with a class</div>
+              </div>
+
+              <div class="form-group">
+                <label for="verseReference">Reference *</label>
+                <input type="text" id="verseReference" required placeholder="e.g., John 3:16 (NIV)">
+              </div>
+
+              <div class="form-group">
+                <label for="verseText">Verse Text *</label>
+                <textarea id="verseText" required placeholder="Type the verse here..."></textarea>
+                <div class="help-text">The verse will automatically be split into individual words</div>
+              </div>
+
+              <div class="form-buttons">
+                <button type="button" class="btn btn-secondary" onclick="cancelEdit()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save Verse</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="verse-list" id="verseList">
+          <!-- Verses will be populated here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Storage key for localStorage
+    const STORAGE_KEY = 'scripture_memory_verses';
+
+    // Get verses from localStorage
+    function getVerses() {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      return stored ? JSON.parse(stored) : [];
+    }
+
+    // Save verses to localStorage
+    function saveVerses(verses) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(verses));
+    }
+
+    // Initialize with sample verse if empty
+    function initializeApp() {
+      let verses = getVerses();
+      if (verses.length === 0) {
+        verses = [{
+          id: Date.now(),
+          name: "John 3:16 - Sample",
+          reference: "John 3:16 (NIV)",
+          text: "For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life."
+        }];
+        saveVerses(verses);
+      }
+      refreshVerseList();
+      populateVerseSelector();
+    }
+
+    // Switch between tabs
+    function switchTab(tabName) {
+      // Hide all tabs
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('active');
+      });
+
+      // Show selected tab
+      document.getElementById(tabName).classList.add('active');
+      event.target.classList.add('active');
+
+      // Refresh data when switching
+      if (tabName === 'admin') {
+        refreshVerseList();
+      } else if (tabName === 'game') {
+        populateVerseSelector();
+      }
+    }
+
+    // Populate verse selector dropdown
+    function populateVerseSelector() {
+      const verses = getVerses();
+      const select = document.getElementById('verseSelect');
+      
+      // Clear existing options except first
+      select.innerHTML = '<option value="">Select a verse...</option>';
+      
+      verses.forEach(verse => {
+        const option = document.createElement('option');
+        option.value = verse.id;
+        option.textContent = verse.name;
+        select.appendChild(option);
+      });
+    }
+
+    // Load and display selected verse
+    function loadVerse() {
+      const select = document.getElementById('verseSelect');
+      const verseId = parseInt(select.value);
+      
+      if (!verseId) {
+        document.getElementById('gameContent').innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">📚</div>
+            <div class="empty-state-text">Select a verse to start playing!</div>
+          </div>
+        `;
+        return;
+      }
+
+      const verses = getVerses();
+      const verse = verses.find(v => v.id === verseId);
+      
+      if (!verse) return;
+
+      // Split verse into words
+      const words = verse.text.split(/\s+/);
+      
+      let html = `
+        <div class="game-instructions">
+          Click each word bubble to "pop" it and help memorize the verse!
+        </div>
+        <div class="word-container" id="wordContainer">
+      `;
+      
+      words.forEach((word, index) => {
+        html += `<span class="word-bubble" onclick="popBubble(this)">${word}</span>`;
+      });
+      
+      html += `
+        </div>
+        <div class="verse-reference">${verse.reference}</div>
+        <div class="game-controls">
+          <button class="btn btn-primary" onclick="resetGame()">↻ Reset All Bubbles</button>
+        </div>
+      `;
+      
+      document.getElementById('gameContent').innerHTML = html;
+    }
+
+    // Pop a bubble
+    function popBubble(element) {
+      element.classList.add('hidden');
+      setTimeout(() => {
+        element.style.display = 'none';
+        checkCompletion();
+      }, 300);
+    }
+
+    // Check if all bubbles are popped
+    function checkCompletion() {
+      const container = document.getElementById('wordContainer');
+      const visibleBubbles = container.querySelectorAll('.word-bubble:not(.hidden)');
+      
+      if (visibleBubbles.length === 0) {
+        setTimeout(() => {
+          container.innerHTML = `
+            <div class="completion-message">
+              <div class="completion-message-icon">🎉</div>
+              <div class="completion-message-text">Excellent! You've memorized the verse!</div>
+            </div>
+          `;
+        }, 500);
+      }
+    }
+
+    // Reset the game
+    function resetGame() {
+      loadVerse();
+    }
+
+    // Show add verse form
+    function showAddForm() {
+      document.getElementById('formTitle').textContent = 'Add New Verse';
+      document.getElementById('editingId').value = '';
+      document.getElementById('verseFormElement').reset();
+      document.getElementById('verseForm').style.display = 'block';
+      document.getElementById('verseName').focus();
+    }
+
+    // Cancel edit
+    function cancelEdit() {
+      document.getElementById('verseForm').style.display = 'none';
+      document.getElementById('verseFormElement').reset();
+    }
+
+    // Save verse
+    function saveVerse(event) {
+      event.preventDefault();
+      
+      const verses = getVerses();
+      const editingId = document.getElementById('editingId').value;
+      
+      const verseData = {
+        name: document.getElementById('verseName').value.trim(),
+        reference: document.getElementById('verseReference').value.trim(),
+        text: document.getElementById('verseText').value.trim()
+      };
+
+      if (editingId) {
+        // Update existing verse
+        const index = verses.findIndex(v => v.id === parseInt(editingId));
+        if (index !== -1) {
+          verses[index] = { ...verses[index], ...verseData };
+        }
+      } else {
+        // Add new verse
+        verseData.id = Date.now();
+        verses.push(verseData);
+      }
+
+      saveVerses(verses);
+      refreshVerseList();
+      populateVerseSelector();
+      cancelEdit();
+    }
+
+    // Edit verse
+    function editVerse(id) {
+      const verses = getVerses();
+      const verse = verses.find(v => v.id === id);
+      
+      if (!verse) return;
+
+      document.getElementById('formTitle').textContent = 'Edit Verse';
+      document.getElementById('editingId').value = verse.id;
+      document.getElementById('verseName').value = verse.name;
+      document.getElementById('verseReference').value = verse.reference;
+      document.getElementById('verseText').value = verse.text;
+      document.getElementById('verseForm').style.display = 'block';
+      document.getElementById('verseName').focus();
+    }
+
+    // Delete verse
+    function deleteVerse(id) {
+      if (!confirm('Are you sure you want to delete this verse?')) return;
+
+      let verses = getVerses();
+      verses = verses.filter(v => v.id !== id);
+      saveVerses(verses);
+      refreshVerseList();
+      populateVerseSelector();
+    }
+
+    // Refresh verse list in admin
+    function refreshVerseList() {
+      const verses = getVerses();
+      const listContainer = document.getElementById('verseList');
+
+      if (verses.length === 0) {
+        listContainer.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">📝</div>
+            <div class="empty-state-text">No verses yet. Click "Add New Verse" to get started!</div>
+          </div>
+        `;
+        return;
+      }
+
+      let html = '';
+      verses.forEach(verse => {
+        const preview = verse.text.length > 100 ? verse.text.substring(0, 100) + '...' : verse.text;
+        html += `
+          <div class="verse-item">
+            <div class="verse-item-header">
+              <div class="verse-item-title">${verse.name}</div>
+              <div class="verse-item-buttons">
+                <button class="btn-small btn-edit" onclick="editVerse(${verse.id})">Edit</button>
+                <button class="btn-small btn-delete" onclick="deleteVerse(${verse.id})">Delete</button>
+              </div>
+            </div>
+            <div class="verse-item-text"><strong>${verse.reference}</strong></div>
+            <div class="verse-item-text">${preview}</div>
+          </div>
+        `;
+      });
+
+      listContainer.innerHTML = html;
+    }
+
+    // Initialize app on load
+    window.addEventListener('DOMContentLoaded', initializeApp);
+  </script>
+</body>
+</html>
