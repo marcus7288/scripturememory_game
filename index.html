@@ -129,29 +129,115 @@
       transition: all 0.3s ease;
       box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
       user-select: none;
+      position: relative;
     }
 
-    .word-bubble:hover {
+    /* Color Themes */
+    .word-bubble.color-purple {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .word-bubble.color-blue {
+      background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%);
+      box-shadow: 0 4px 15px rgba(33, 147, 176, 0.4);
+    }
+
+    .word-bubble.color-green {
+      background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+      box-shadow: 0 4px 15px rgba(86, 171, 47, 0.4);
+    }
+
+    .word-bubble.color-orange {
+      background: linear-gradient(135deg, #f83600 0%, #f9d423 100%);
+      box-shadow: 0 4px 15px rgba(248, 54, 0, 0.4);
+    }
+
+    .word-bubble.color-pink {
+      background: linear-gradient(135deg, #ff6b9d 0%, #ffa8d5 100%);
+      box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4);
+    }
+
+    .word-bubble.color-red {
+      background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+      box-shadow: 0 4px 15px rgba(235, 51, 73, 0.4);
+    }
+
+    .word-bubble.color-teal {
+      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+      box-shadow: 0 4px 15px rgba(17, 153, 142, 0.4);
+    }
+
+    .word-bubble.color-gold {
+      background: linear-gradient(135deg, #d4af37 0%, #f9d423 100%);
+      box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+    }
+
+    .word-bubble:hover:not(.popped) {
       transform: translateY(-5px) scale(1.05);
+    }
+
+    .word-bubble.color-purple:hover:not(.popped) {
       box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
     }
 
-    .word-bubble.hidden {
-      animation: pop 0.3s ease-out forwards;
+    .word-bubble.color-blue:hover:not(.popped) {
+      box-shadow: 0 6px 20px rgba(33, 147, 176, 0.6);
+    }
+
+    .word-bubble.color-green:hover:not(.popped) {
+      box-shadow: 0 6px 20px rgba(86, 171, 47, 0.6);
+    }
+
+    .word-bubble.color-orange:hover:not(.popped) {
+      box-shadow: 0 6px 20px rgba(248, 54, 0, 0.6);
+    }
+
+    .word-bubble.color-pink:hover:not(.popped) {
+      box-shadow: 0 6px 20px rgba(255, 107, 157, 0.6);
+    }
+
+    .word-bubble.color-red:hover:not(.popped) {
+      box-shadow: 0 6px 20px rgba(235, 51, 73, 0.6);
+    }
+
+    .word-bubble.color-teal:hover:not(.popped) {
+      box-shadow: 0 6px 20px rgba(17, 153, 142, 0.6);
+    }
+
+    .word-bubble.color-gold:hover:not(.popped) {
+      box-shadow: 0 6px 20px rgba(212, 175, 55, 0.6);
+    }
+
+    .word-bubble.popped {
+      background: transparent;
+      color: transparent;
+      border: 3px dashed #ccc;
+      box-shadow: none;
+      cursor: default;
+      animation: pop 0.3s ease-out;
+    }
+
+    .word-bubble.popped::after {
+      content: '_ _ _';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #ccc;
+      font-size: 0.8em;
+      letter-spacing: 3px;
     }
 
     @keyframes pop {
       0% {
         transform: scale(1);
-        opacity: 1;
       }
       50% {
-        transform: scale(1.2);
-        opacity: 0.5;
+        transform: scale(1.3) rotate(10deg);
       }
       100% {
-        transform: scale(0);
-        opacity: 0;
+        transform: scale(1) rotate(0deg);
       }
     }
 
@@ -242,6 +328,49 @@
       font-weight: 600;
       color: #667eea;
       font-size: 1.2em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .verse-color-badge {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: inline-block;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    .verse-color-badge.color-purple {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .verse-color-badge.color-blue {
+      background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%);
+    }
+
+    .verse-color-badge.color-green {
+      background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+    }
+
+    .verse-color-badge.color-orange {
+      background: linear-gradient(135deg, #f83600 0%, #f9d423 100%);
+    }
+
+    .verse-color-badge.color-pink {
+      background: linear-gradient(135deg, #ff6b9d 0%, #ffa8d5 100%);
+    }
+
+    .verse-color-badge.color-red {
+      background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+    }
+
+    .verse-color-badge.color-teal {
+      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    }
+
+    .verse-color-badge.color-gold {
+      background: linear-gradient(135deg, #d4af37 0%, #f9d423 100%);
     }
 
     .verse-item-buttons {
@@ -376,6 +505,70 @@
       font-size: 0.9em;
       margin-top: 5px;
     }
+
+    .color-select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1em;
+      font-family: inherit;
+      background: white;
+      cursor: pointer;
+    }
+
+    .color-select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .color-preview-container {
+      margin-top: 10px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .color-preview {
+      width: 120px;
+      height: 40px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+      transition: all 0.3s;
+    }
+
+    .color-preview.color-purple {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .color-preview.color-blue {
+      background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%);
+    }
+
+    .color-preview.color-green {
+      background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+    }
+
+    .color-preview.color-orange {
+      background: linear-gradient(135deg, #f83600 0%, #f9d423 100%);
+    }
+
+    .color-preview.color-pink {
+      background: linear-gradient(135deg, #ff6b9d 0%, #ffa8d5 100%);
+    }
+
+    .color-preview.color-red {
+      background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+    }
+
+    .color-preview.color-teal {
+      background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    }
+
+    .color-preview.color-gold {
+      background: linear-gradient(135deg, #d4af37 0%, #f9d423 100%);
+    }
   </style>
 </head>
 <body>
@@ -436,6 +629,24 @@
               </div>
 
               <div class="form-group">
+                <label for="verseColor">Bubble Color Theme</label>
+                <select id="verseColor" class="color-select">
+                  <option value="purple">Purple (Default)</option>
+                  <option value="blue">Blue Ocean</option>
+                  <option value="green">Green Forest</option>
+                  <option value="orange">Orange Sunset</option>
+                  <option value="pink">Pink Blossom</option>
+                  <option value="red">Red Fire</option>
+                  <option value="teal">Teal Wave</option>
+                  <option value="gold">Gold Royal</option>
+                </select>
+                <div class="color-preview-container">
+                  <div class="color-preview" id="colorPreview"></div>
+                </div>
+                <div class="help-text">Choose a color theme for this verse's bubbles</div>
+              </div>
+
+              <div class="form-group">
                 <label for="verseText">Verse Text *</label>
                 <textarea id="verseText" required placeholder="Type the verse here..."></textarea>
                 <div class="help-text">The verse will automatically be split into individual words</div>
@@ -479,12 +690,14 @@
           id: Date.now(),
           name: "John 3:16 - Sample",
           reference: "John 3:16 (NIV)",
-          text: "For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life."
+          text: "For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.",
+          color: "purple"
         }];
         saveVerses(verses);
       }
       refreshVerseList();
       populateVerseSelector();
+      updateColorPreview(); // Initialize preview
     }
 
     // Switch between tabs
@@ -547,6 +760,7 @@
 
       // Split verse into words
       const words = verse.text.split(/\s+/);
+      const colorClass = verse.color || 'purple';
       
       let html = `
         <div class="game-instructions">
@@ -556,7 +770,7 @@
       `;
       
       words.forEach((word, index) => {
-        html += `<span class="word-bubble" onclick="popBubble(this)">${word}</span>`;
+        html += `<span class="word-bubble color-${colorClass}" onclick="popBubble(this)">${word}</span>`;
       });
       
       html += `
@@ -572,9 +786,11 @@
 
     // Pop a bubble
     function popBubble(element) {
-      element.classList.add('hidden');
+      if (element.classList.contains('popped')) {
+        return; // Already popped, do nothing
+      }
+      element.classList.add('popped');
       setTimeout(() => {
-        element.style.display = 'none';
         checkCompletion();
       }, 300);
     }
@@ -582,14 +798,18 @@
     // Check if all bubbles are popped
     function checkCompletion() {
       const container = document.getElementById('wordContainer');
-      const visibleBubbles = container.querySelectorAll('.word-bubble:not(.hidden)');
+      const unpoppedBubbles = container.querySelectorAll('.word-bubble:not(.popped)');
       
-      if (visibleBubbles.length === 0) {
+      if (unpoppedBubbles.length === 0) {
         setTimeout(() => {
-          container.innerHTML = `
+          const gameContent = document.getElementById('gameContent');
+          gameContent.innerHTML = `
             <div class="completion-message">
               <div class="completion-message-icon">🎉</div>
               <div class="completion-message-text">Excellent! You've memorized the verse!</div>
+            </div>
+            <div class="game-controls">
+              <button class="btn btn-primary" onclick="loadVerse()">↻ Try Again</button>
             </div>
           `;
         }, 500);
@@ -606,8 +826,22 @@
       document.getElementById('formTitle').textContent = 'Add New Verse';
       document.getElementById('editingId').value = '';
       document.getElementById('verseFormElement').reset();
+      document.getElementById('verseColor').value = 'purple';
+      updateColorPreview();
       document.getElementById('verseForm').style.display = 'block';
       document.getElementById('verseName').focus();
+    }
+
+    // Update color preview
+    function updateColorPreview() {
+      const colorSelect = document.getElementById('verseColor');
+      const preview = document.getElementById('colorPreview');
+      const selectedColor = colorSelect.value;
+      
+      // Remove all color classes
+      preview.className = 'color-preview';
+      // Add selected color class
+      preview.classList.add('color-' + selectedColor);
     }
 
     // Cancel edit
@@ -626,7 +860,8 @@
       const verseData = {
         name: document.getElementById('verseName').value.trim(),
         reference: document.getElementById('verseReference').value.trim(),
-        text: document.getElementById('verseText').value.trim()
+        text: document.getElementById('verseText').value.trim(),
+        color: document.getElementById('verseColor').value
       };
 
       if (editingId) {
@@ -659,6 +894,8 @@
       document.getElementById('verseName').value = verse.name;
       document.getElementById('verseReference').value = verse.reference;
       document.getElementById('verseText').value = verse.text;
+      document.getElementById('verseColor').value = verse.color || 'purple';
+      updateColorPreview();
       document.getElementById('verseForm').style.display = 'block';
       document.getElementById('verseName').focus();
     }
@@ -692,10 +929,14 @@
       let html = '';
       verses.forEach(verse => {
         const preview = verse.text.length > 100 ? verse.text.substring(0, 100) + '...' : verse.text;
+        const colorClass = verse.color || 'purple';
         html += `
           <div class="verse-item">
             <div class="verse-item-header">
-              <div class="verse-item-title">${verse.name}</div>
+              <div class="verse-item-title">
+                <span class="verse-color-badge color-${colorClass}"></span>
+                ${verse.name}
+              </div>
               <div class="verse-item-buttons">
                 <button class="btn-small btn-edit" onclick="editVerse(${verse.id})">Edit</button>
                 <button class="btn-small btn-delete" onclick="deleteVerse(${verse.id})">Delete</button>
@@ -712,6 +953,14 @@
 
     // Initialize app on load
     window.addEventListener('DOMContentLoaded', initializeApp);
+
+    // Add color preview update listener
+    window.addEventListener('DOMContentLoaded', function() {
+      const colorSelect = document.getElementById('verseColor');
+      if (colorSelect) {
+        colorSelect.addEventListener('change', updateColorPreview);
+      }
+    });
   </script>
 </body>
 </html>
