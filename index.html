@@ -637,7 +637,10 @@
       <div class="admin-container">
         <div class="admin-header">
           <h2>Manage Verses</h2>
-          <button class="btn btn-primary" onclick="showAddForm()">+ Add New Verse</button>
+          <div>
+            <button class="btn btn-secondary" onclick="addSampleVerse()" style="margin-right: 10px;">+ Add Sample Verse</button>
+            <button class="btn btn-primary" onclick="showAddForm()">+ Add New Verse</button>
+          </div>
         </div>
 
         <div id="verseForm" style="display: none;">
@@ -830,14 +833,20 @@
     // Initialize with sample verse if empty
     async function initializeApp() {
       try {
+        console.log('Initializing app...');
+        console.log('Local mode:', isLocalMode);
+        
         // Show loading state
         updateSyncStatus('syncing');
         
         // Fetch verses from cloud
+        console.log('Fetching verses...');
         const verses = await getVerses();
+        console.log('Verses loaded:', verses.length);
         
         // If truly empty (no cloud data, no local data), create sample
         if (verses.length === 0) {
+          console.log('No verses found, creating sample...');
           const sampleVerses = [{
             id: Date.now(),
             name: "John 3:16 - Sample",
@@ -846,12 +855,15 @@
             color: "purple"
           }];
           await saveVerses(sampleVerses);
+          console.log('Sample verse created');
         }
         
         // Populate UI
+        console.log('Populating UI...');
         await refreshVerseList();
         await populateVerseSelector();
         updateColorPreview();
+        console.log('Initialization complete!');
         
       } catch (error) {
         console.error('Initialization error:', error);
@@ -860,10 +872,13 @@
         // Still try to load from localStorage as fallback
         const stored = localStorage.getItem('scripture_memory_verses');
         if (stored) {
+          console.log('Loading from localStorage fallback');
           versesCache = JSON.parse(stored);
           await refreshVerseList();
           await populateVerseSelector();
           updateColorPreview();
+        } else {
+          console.log('No localStorage data either');
         }
       }
     }
@@ -908,7 +923,7 @@
     }
 
     // Load and display selected verse
-    function loadVerse() {
+    async function loadVerse() {
       const select = document.getElementById('verseSelect');
       const verseId = parseInt(select.value);
       
@@ -922,10 +937,26 @@
         return;
       }
 
-      const verses = getVerses();
+      const verses = await getVerses();
+      
+      // Ensure verses is an array
+      if (!Array.isArray(verses)) {
+        console.error('Verses is not an array:', verses);
+        document.getElementById('gameContent').innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">⚠️</div>
+            <div class="empty-state-text">Error loading verses. Please refresh the page.</div>
+          </div>
+        `;
+        return;
+      }
+      
       const verse = verses.find(v => v.id === verseId);
       
-      if (!verse) return;
+      if (!verse) {
+        console.error('Verse not found with id:', verseId);
+        return;
+      }
 
       // Split verse into words
       const words = verse.text.split(/\s+/);
@@ -999,6 +1030,23 @@
       updateColorPreview();
       document.getElementById('verseForm').style.display = 'block';
       document.getElementById('verseName').focus();
+    }
+
+    // Add sample verse (for debugging/testing)
+    async function addSampleVerse() {
+      const verses = await getVerses();
+      const sampleVerse = {
+        id: Date.now(),
+        name: "John 3:16 - Sample",
+        reference: "John 3:16 (NIV)",
+        text: "For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.",
+        color: "purple"
+      };
+      verses.push(sampleVerse);
+      await saveVerses(verses);
+      await refreshVerseList();
+      await populateVerseSelector();
+      alert('✅ Sample verse added! Check the Game tab.');
     }
 
     // Update color preview
