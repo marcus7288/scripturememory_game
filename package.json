@@ -1,9 +1,0 @@
-{
-  "name": "scripture-memory-game",
-  "version": "1.0.0",
-  "description": "Interactive scripture memorization game with cloud storage",
-  "type": "module",
-  "dependencies": {
-    "@netlify/blobs": "^7.0.0"
-  }
-}
