@@ -24,6 +24,9 @@ This is a fully-functional web app for scripture memorization that you can:
 - Edit existing verses
 - Delete verses you no longer need
 - Organize verses by class or topic
+- **Choose from 8 beautiful color themes** (Purple, Blue, Green, Orange, Pink, Red, Teal, Gold)
+- Live color preview when selecting themes
+- Color badges in verse list for easy visual identification
 - All data saved in browser storage (no database needed!)
 
 ## 🚀 Deploy to Netlify (5 Minutes!)
@@ -74,6 +77,7 @@ netlify deploy --prod --dir=.
    - Click "+ Add New Verse"
    - Enter a name (e.g., "John 3:16 - Sunday School Class A")
    - Enter the reference (e.g., "John 3:16 NIV")
+   - **Choose a color theme** (e.g., Blue for kids class, Green for youth)
    - Paste or type the verse text
    - Click "Save Verse"
 
@@ -81,6 +85,7 @@ netlify deploy --prod --dir=.
    - Name verses with class identifiers: "Psalm 23 - Youth Group"
    - Or by week: "Memory Verse - Week 1"
    - Or by age group: "John 3:16 - Kids 5-7"
+   - **Use different colors** for different classes or age groups
 
 4. **Before Class:**
    - Add the verse(s) you want students to memorize
@@ -135,6 +140,28 @@ netlify deploy --prod --dir=.
 - Project on screen for group play
 
 ## 🎨 Customization
+
+### Using Color Themes
+
+The app includes 8 pre-built color themes for bubbles:
+
+1. **Purple** (Default) - Classic gradient
+2. **Blue** - Ocean blue tones
+3. **Green** - Fresh forest green
+4. **Orange** - Warm sunset orange
+5. **Pink** - Soft pink blossom
+6. **Red** - Bold red fire
+7. **Teal** - Vibrant teal wave
+8. **Gold** - Elegant gold royal
+
+**Why Use Different Colors?**
+- **By Age Group**: Blue for kids, Green for teens, Purple for adults
+- **By Class**: Different color for each Sunday School class
+- **By Topic**: Red for salvation verses, Green for growth, Blue for peace
+- **By Difficulty**: Gold for advanced verses, Pink for beginners
+- **By Week**: Rotate colors each week for visual variety
+
+The color badge appears next to the verse name in the admin panel, making it easy to identify verses at a glance!
 
 ### Change Colors
 
